@@ -8,7 +8,6 @@
 !agents
 !pins
 !stickers
-!sticker
 ```
 
 # Stickers Menu
@@ -17,7 +16,6 @@ Players can change stickers in-game with:
 
 ```txt
 !stickers
-!sticker
 ```
 
 ## Stickers VIP Only
@@ -31,10 +29,10 @@ The stickers command can be made VIP-only in the config.
 
 ```txt
 StickersVipOnly = false
-Everyone can use !stickers / !sticker
+Everyone can use !stickers
 
 StickersVipOnly = true
-Only players with the configured permission can use !stickers / !sticker
+Only players with the configured permission can use !stickers
 ```
 
 ---
