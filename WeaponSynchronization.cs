@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using MySqlConnector;
 using System.Collections.Concurrent;
 using CounterStrikeSharp.API.Modules.Utils;
@@ -481,6 +481,11 @@ internal class WeaponSynchronization
 					var paintId = weaponInfo.Paint;
 					var wear = weaponInfo.Wear;
 					var seed = weaponInfo.Seed;
+					var sticker0 = BuildStickerDatabaseValue(weaponInfo, 0);
+					var sticker1 = BuildStickerDatabaseValue(weaponInfo, 1);
+					var sticker2 = BuildStickerDatabaseValue(weaponInfo, 2);
+					var sticker3 = BuildStickerDatabaseValue(weaponInfo, 3);
+					var sticker4 = BuildStickerDatabaseValue(weaponInfo, 4);
 
 					// Prepare the queries to check and update/insert weapon skin data
 					const string queryCheckExistence = "SELECT COUNT(*) FROM `wp_player_skins` WHERE `steamid` = @steamid AND `weapon_defindex` = @weaponDefIndex AND `weapon_team` = @weaponTeam";
@@ -496,16 +501,17 @@ internal class WeaponSynchronization
 					if (existingRecordCount > 0)
 					{
 						// Update existing record
-						query = "UPDATE `wp_player_skins` SET `weapon_paint_id` = @paintId, `weapon_wear` = @wear, `weapon_seed` = @seed " +
+						query = "UPDATE `wp_player_skins` SET `weapon_paint_id` = @paintId, `weapon_wear` = @wear, `weapon_seed` = @seed, " +
+						        "`weapon_sticker_0` = @sticker0, `weapon_sticker_1` = @sticker1, `weapon_sticker_2` = @sticker2, `weapon_sticker_3` = @sticker3, `weapon_sticker_4` = @sticker4 " +
 						        "WHERE `steamid` = @steamid AND `weapon_defindex` = @weaponDefIndex AND `weapon_team` = @weaponTeam";
-						parameters = new { steamid = player.SteamId, weaponDefIndex, weaponTeam = (int)teamId, paintId, wear, seed };
+						parameters = new { steamid = player.SteamId, weaponDefIndex, weaponTeam = (int)teamId, paintId, wear, seed, sticker0, sticker1, sticker2, sticker3, sticker4 };
 					}
 					else
 					{
 						// Insert new record
-						query = "INSERT INTO `wp_player_skins` (`steamid`, `weapon_defindex`, `weapon_team`, `weapon_paint_id`, `weapon_wear`, `weapon_seed`) " +
-						        "VALUES (@steamid, @weaponDefIndex, @weaponTeam, @paintId, @wear, @seed)";
-						parameters = new { steamid = player.SteamId, weaponDefIndex, weaponTeam = (int)teamId, paintId, wear, seed };
+						query = "INSERT INTO `wp_player_skins` (`steamid`, `weapon_defindex`, `weapon_team`, `weapon_paint_id`, `weapon_wear`, `weapon_seed`, `weapon_sticker_0`, `weapon_sticker_1`, `weapon_sticker_2`, `weapon_sticker_3`, `weapon_sticker_4`) " +
+						        "VALUES (@steamid, @weaponDefIndex, @weaponTeam, @paintId, @wear, @seed, @sticker0, @sticker1, @sticker2, @sticker3, @sticker4)";
+						parameters = new { steamid = player.SteamId, weaponDefIndex, weaponTeam = (int)teamId, paintId, wear, seed, sticker0, sticker1, sticker2, sticker3, sticker4 };
 					}
 
 					await connection.ExecuteAsync(query, parameters);
@@ -516,6 +522,24 @@ internal class WeaponSynchronization
 		{
 			Utility.Log($"Error syncing weapon paints to database: {e.Message}");
 		}
+	}
+
+	private static string BuildStickerDatabaseValue(WeaponInfo weaponInfo, int stickerSlot)
+	{
+		if (stickerSlot >= weaponInfo.Stickers.Count)
+		{
+			return "0;0;0;0;0;0;0";
+		}
+
+		var sticker = weaponInfo.Stickers[stickerSlot];
+		return string.Join(";",
+			sticker.Id.ToString(CultureInfo.InvariantCulture),
+			sticker.Schema.ToString(CultureInfo.InvariantCulture),
+			sticker.OffsetX.ToString(CultureInfo.InvariantCulture),
+			sticker.OffsetY.ToString(CultureInfo.InvariantCulture),
+			sticker.Wear.ToString(CultureInfo.InvariantCulture),
+			sticker.Scale.ToString(CultureInfo.InvariantCulture),
+			sticker.Rotation.ToString(CultureInfo.InvariantCulture));
 	}
 
 	internal async Task SyncMusicToDatabase(PlayerInfo player, ushort music, CsTeam[] teams)
