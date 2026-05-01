@@ -564,10 +564,12 @@ private static int GetRandomPaint(int defindex)
 		private static void GivePlayerPin(CCSPlayerController player)
 		{
 			if (!GPlayersPin.TryGetValue(player.Slot, out var pinInfo) ||
-			    !pinInfo.TryGetValue(player.Team, out var pinId)) return;
+			    !pinInfo.TryGetValue(player.Team, out var pinId) ||
+			    pinId == 0) return;
 			if (player.InventoryServices == null) return;
-			
-			player.InventoryServices.Rank[5] = pinId > 0 ? (MedalRank_t)pinId : MedalRank_t.MEDAL_RANK_NONE;
+
+			CacheCurrentNativePin(player);
+			player.InventoryServices.Rank[5] = (MedalRank_t)pinId;
 			Utilities.SetStateChanged(player, "CCSPlayerController", "m_pInventoryServices");
 		}
 		
