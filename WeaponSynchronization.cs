@@ -352,8 +352,11 @@ internal class WeaponSynchronization
 
 			foreach (var row in rows)
 			{
-				// Check if id is null
+				// id 0 means default/player-owned pin. Do not load it as MEDAL_RANK_NONE,
+				// otherwise the plugin hides the player's own equipped inventory pin after reconnect/map change.
 				if (row.id == null) continue;
+				var pinId = Convert.ToInt32(row.id);
+				if (pinId <= 0) continue;
 
 				// Determine the weapon team based on the query result
 				CsTeam weaponTeam = (int)row.weapon_team switch
@@ -369,13 +372,13 @@ internal class WeaponSynchronization
 				if (weaponTeam == CsTeam.None)
 				{
 					// Assign pin ID to both teams if weaponTeam is None
-					playerPins[CsTeam.Terrorist] = (ushort)row.id;
-					playerPins[CsTeam.CounterTerrorist] = (ushort)row.id;
+					playerPins[CsTeam.Terrorist] = (ushort)pinId;
+					playerPins[CsTeam.CounterTerrorist] = (ushort)pinId;
 				}
 				else
 				{
 					// Assign pin ID to the specific team
-					playerPins[weaponTeam] = (ushort)row.id;
+					playerPins[weaponTeam] = (ushort)pinId;
 				}
 			}
 		}
