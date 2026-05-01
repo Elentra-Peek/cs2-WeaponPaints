@@ -2575,13 +2575,13 @@ public partial class WeaponPaints
 	private static void RestorePlayerDefaultPin(CCSPlayerController player)
 	{
 		if (player.InventoryServices == null) return;
-		var defaultPin = MedalRank_t.MEDAL_RANK_NONE;
-		if (GPlayersNativePin.TryGetValue(player.Slot, out var nativePinsByTeam) &&
-		    nativePinsByTeam.TryGetValue(player.Team, out var nativePin))
+		if (!GPlayersNativePin.TryGetValue(player.Slot, out var nativePinsByTeam) ||
+		    !nativePinsByTeam.TryGetValue(player.Team, out var nativePin))
 		{
-			defaultPin = nativePin;
+			return;
 		}
-		player.InventoryServices.Rank[5] = defaultPin;
+
+		player.InventoryServices.Rank[5] = nativePin;
 		Utilities.SetStateChanged(player, "CCSPlayerController", "m_pInventoryServices");
 	}
 
