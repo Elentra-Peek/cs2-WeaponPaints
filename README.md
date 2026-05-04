@@ -1,3 +1,4 @@
+up
 # CS2-WeaponPaints
 
 # Organized Menus
