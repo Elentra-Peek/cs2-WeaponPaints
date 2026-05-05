@@ -113,7 +113,7 @@ namespace WeaponPaints
 		public string Website { get; set; } = "example.com/skins";
 
 		[JsonPropertyName("SkinApiURL")]
-		public string SkinApiURL { get; set; } = "https://raw.githubusercontent.com/ByMykel/CSGO-API/main/public/api";
+		public string SkinApiURL { get; set; } = "https://cdn.jsdelivr.net/gh/ByMykel/CSGO-API@main/public/api";
 
 		[JsonPropertyName("Additional")]
 		public Additional Additional { get; set; } = new();
