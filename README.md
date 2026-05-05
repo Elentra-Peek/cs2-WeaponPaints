@@ -81,6 +81,7 @@ The menu allows the player to choose what they want to edit:
 Knife
 Gloves
 ```
+When a player is holding a knife and types `!seed` or `!wear` with value, knife only will change.
 
 ---
 
